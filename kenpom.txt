@@ -1,0 +1,365 @@
+Duke
+Auburn
+Houston
+Florida
+Tennessee
+Alabama
+Texas Tech
+Gonzaga
+Michigan St.
+Iowa St.
+Kentucky
+Maryland
+Wisconsin
+Purdue
+St. John's
+Arizona
+Texas A&M
+Illinois
+Clemson
+Missouri
+Kansas
+Saint Mary's
+Louisville
+BYU
+UCLA
+Marquette
+Mississippi
+Michigan
+VCU
+Baylor
+Oregon
+Mississippi St.
+Georgia
+Ohio St.
+Connecticut
+Creighton
+North Carolina
+Oklahoma
+UC San Diego
+Arkansas
+Team
+New Mexico
+Xavier
+San Diego St.
+Indiana
+Vanderbilt
+Texas
+Northwestern
+Memphis
+Boise St.
+Nebraska
+Colorado St.
+West Virginia
+SMU
+Utah St.
+Villanova
+Santa Clara
+Cincinnati
+Pittsburgh
+Penn St.
+McNeese
+Drake
+Liberty
+USC
+UC Irvine
+North Texas
+Kansas St.
+San Francisco
+South Carolina
+Arizona St.
+Wake Forest
+Utah
+Yale
+Dayton
+Iowa
+Rutgers
+Butler
+UCF
+Saint Joseph's
+Nevada
+LSU
+Oregon St.
+Lipscomb
+Georgetown
+High Point
+George Mason
+Stanford
+Florida St.
+TCU
+Minnesota
+Arkansas St.
+UNLV
+Colorado
+Bradley
+Notre Dame
+Providence
+Oklahoma St.
+Georgia Tech
+Grand Canyon
+Akron
+Northern Iowa
+St. Bonaventure
+Virginia
+CSUN
+UAB
+North Alabama
+Saint Louis
+Troy
+Chattanooga
+George Washington
+UNC Wilmington
+Washington
+Syracuse
+California
+Loyola Chicago
+Middle Tennessee
+Samford
+Florida Atlantic
+Jacksonville St.
+South Alabama
+Washington St.
+St. Thomas
+Utah Valley
+Louisiana Tech
+N.C. State
+DePaul
+Wofford
+Wichita St.
+Kent St.
+Belmont
+New Mexico St.
+Duquesne
+Kennesaw St.
+Cornell
+North Dakota St.
+Northern Colorado
+South Dakota St.
+Furman
+UC Riverside
+Seattle
+Rhode Island
+Illinois St.
+East Tennessee St.
+Murray St.
+Davidson
+UNC Greensboro
+Milwaukee
+Robert Morris
+UC Santa Barbara
+Towson
+Charleston
+James Madison
+Radford
+Western Kentucky
+Loyola Marymount
+Virginia Tech
+Bryant
+Winthrop
+UTEP
+Texas A&M Corpus Chris
+East Carolina
+Tulane
+Miami OH
+Cal Baptist
+Purdue Fort Wayne
+Nebraska Omaha
+Sam Houston St.
+Cleveland St.
+Marshall
+San Jose St.
+Appalachian St.
+Lamar
+Temple
+Nicholls
+Florida Gulf Coast
+Illinois Chicago
+Norfolk St.
+Central Connecticut
+Montana
+Oakland
+Jacksonville
+Princeton
+Eastern Kentucky
+Boston College
+Drexel
+Wyoming
+Merrimack
+Montana St.
+Rice
+UTSA
+Cal Poly
+South Carolina St.
+Miami FL
+Southeastern Louisiana
+South Florida
+Southern Illinois
+Portland St.
+Ohio
+Dartmouth
+Idaho St.
+Elon
+Texas St.
+UNC Asheville
+Youngstown St.
+Central Michigan
+Queens
+Indiana St.
+Southeast Missouri
+Seton Hall
+Hampton
+Northeastern
+Brown
+Massachusetts
+Longwood
+Valparaiso
+Quinnipiac
+William & Mary
+SIUE
+Bucknell
+UT Arlington
+Abilene Christian
+Hofstra
+Campbell
+Wright St.
+Maine
+Hawaii
+Little Rock
+Pepperdine
+Manhattan
+Southern
+La Salle
+Presbyterian
+Vermont
+Northwestern St.
+Northern Kentucky
+Kansas City
+Richmond
+Cal St. Bakersfield
+South Dakota
+UT Rio Grande Valley
+UMass Lowell
+UC Davis
+Fordham
+Toledo
+Northern Arizona
+Missouri St.
+Georgia Southern
+Incarnate Word
+Siena
+American
+Tennessee St.
+Fresno St.
+Delaware
+Colgate
+Harvard
+FIU
+Jackson St.
+North Florida
+Mount St. Mary's
+Evansville
+Mercer
+Gardner Webb
+Charlotte
+Georgia St.
+North Dakota
+Sacred Heart
+Iona
+Navy
+Monmouth
+Portland
+Marist
+Albany
+Houston Christian
+Austin Peay
+Ball St.
+Idaho
+Texas Southern
+Columbia
+Stephen F. Austin
+Eastern Michigan
+Alabama St.
+VMI
+Bethune Cookman
+Lehigh
+Old Dominion
+Tulsa
+Pacific
+Bowling Green
+LIU
+Tarleton St.
+Lafayette
+Southern Utah
+Weber St.
+Tennessee Martin
+Penn
+Eastern Washington
+Western Michigan
+San Diego
+Southern Miss
+UMBC
+Saint Peter's
+Utah Tech
+Charleston Southern
+Long Beach St.
+Boston University
+Tennessee Tech
+Loyola MD
+Fairleigh Dickinson
+Delaware St.
+Denver
+Air Force
+Howard
+Rider
+Eastern Illinois
+Florida A&M
+IU Indy
+Louisiana
+Saint Francis
+North Carolina Central
+Holy Cross
+Binghamton
+Niagara
+Stonehill
+Alcorn St.
+Army
+Morehead St.
+Lindenwood
+Coastal Carolina
+Oral Roberts
+East Texas A&M
+Grambling St.
+Fairfield
+Stony Brook
+Morgan St.
+Green Bay
+North Carolina A&T
+Southern Indiana
+Western Carolina
+Detroit Mercy
+USC Upstate
+Buffalo
+Bellarmine
+Mercyhurst
+Sacramento St.
+Wagner
+Central Arkansas
+Northern Illinois
+Western Illinois
+Louisiana Monroe
+West Georgia
+New Orleans
+Cal St. Fullerton
+Stetson
+NJIT
+Le Moyne
+New Hampshire
+The Citadel
+Prairie View A&M
+Alabama A&M
+Canisius
+Maryland Eastern Shore
+Chicago St.
+Coppin St.
+Arkansas Pine Bluff
+Mississippi Valley St.
