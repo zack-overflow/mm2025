@@ -35,11 +35,12 @@ def simulate_n_tournaments(matchups_dict, N=100):
     return champion_probs
 
 def main():
-    matchups_dict = read_unplayed_tournament(year=2024)
+    year = 2024
+    matchups_dict = read_unplayed_tournament(year=year)
     
     # Load player ppg data if not already loaded
     try:
-        with open('player_data.pkl', 'rb') as f:
+        with open(f'player_data_{year}.pkl', 'rb') as f:
             player_data = pickle.load(f)
     except FileNotFoundError:
         player_data = {}
@@ -60,7 +61,7 @@ def main():
         print(player_data)
 
         # Save player data dictionary to a file
-        with open('player_data.pkl', 'wb') as f:
+        with open(f'player_data_{year}.pkl', 'wb') as f:
             pickle.dump(player_data, f)
 
     probs = simulate_n_tournaments(matchups_dict, N=1000)
