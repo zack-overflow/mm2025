@@ -141,3 +141,10 @@ def simulate_player_pts(player_avg_pts, variance=5):
         float: The simulated points scored by the player.
     """
     return max(0, np.random.normal(player_avg_pts, variance))
+
+def handle_player_bookkeeping_for_team_win(player_bk_dict, winning_team_ref):
+    winning_seed = winning_team_ref.seed
+    winning_team_dict = player_bk_dict[winning_team_ref.team_name]
+
+    # sample from player pts and add to running total, including seed multiplier
+    
