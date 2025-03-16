@@ -128,8 +128,8 @@ def simulate_game_kenpom(team1, team2):
     else:
         return team2
 
-# TODO: SHOULD MAKE THE SIMULATION DATA-BASED INSTEAD OF ASSUMING NORMAL
-def simulate_player_pts(player_avg_pts, variance=1):
+# TODO: SHOULD MAKE THE SIMULATION DATA-BASED INSTEAD OF ASSUMING NORMAL WITH VAR OF 5
+def simulate_player_pts(player_avg_pts, variance=5):
     """
     Simulate the points scored by a player in a game based on their average points and variance.
     
