@@ -1,7 +1,8 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
+from kenpompy.misc import get_pomeroy_ratings
+import cloudscraper
 
 def scrape_kenpom_to_df(year=2024):
     """
@@ -10,15 +11,15 @@ def scrape_kenpom_to_df(year=2024):
     Returns:
         pd.DataFrame: DataFrame containing KenPom data.
     """
+    # Use cloudscraper to bypass Cloudflare protection
+    scraper = cloudscraper.create_scraper()
+    # print(get_pomeroy_ratings(browser=scraper, season='2024'))
+    
     url = f"https://kenpom.com/index.php?y={year}"
-    # Assign random user agent to avoid being blocked
-    headers = {
-        'User-Agent': UserAgent().random
-    }
-
-    response = requests.get(url, headers=headers)
+    response = scraper.get(url)
     
     if response.status_code != 200:
+        print(f"Error: {response.status}")
         print(response)
         raise Exception(f"Failed to fetch data from {url}")
     
@@ -149,7 +150,7 @@ def read_unplayed_tournament(year):
     return matchups_dict
 
 # TODO: USE LINKS TO PLAYER PROFILES IN ROSTER FOR REG SEASON STATS ONLY & EMPERICAL DISTRIBUTION
-def load_player_data(team_link):
+def load_player_data_for_team(team_link):
     """
     Load the roster for a team from the link to the team's SR page.
     

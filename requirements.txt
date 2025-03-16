@@ -3,3 +3,6 @@ requests
 beautifulsoup4
 fake-useragent
 numpy
+urllib3
+kenpompy
+cloudscraper
