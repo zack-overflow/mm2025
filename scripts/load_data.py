@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
 
 def scrape_kenpom_to_df(year=2024):
     """
@@ -10,8 +11,9 @@ def scrape_kenpom_to_df(year=2024):
         pd.DataFrame: DataFrame containing KenPom data.
     """
     url = f"https://kenpom.com/index.php?y={year}"
+    # Assign random user agent to avoid being blocked
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+        'User-Agent': UserAgent().random
     }
 
     response = requests.get(url, headers=headers)
@@ -22,7 +24,7 @@ def scrape_kenpom_to_df(year=2024):
     
     soup = BeautifulSoup(response.text, 'html.parser')
     # Parse the HTML content using BeautifulSoup
-    table = soup.find("table", id ="ratings-table")
+    table = soup.find("table", id="ratings-table")
 
     if table is None:
         raise Exception("Failed to find the ratings table on the page.")
@@ -82,21 +84,24 @@ def full_kenpom_pipeline(year=2024):
     
     return kenpom_df
 
-def read_unplayed_tournament(year, region):
+def read_unplayed_region(year, region):
     BASE_URL = "https://www.sports-reference.com/cbb/postseason/men/{}-ncaa.html"
     url = BASE_URL.format(year)
     
     # Use requests to get the content of the webpage
     response = requests.get(url)
     html_content = response.text
+    if response.status_code != 200:
+        print(response)
+        raise Exception(f"Failed to fetch data from {url}")
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
     # Find the container for the east region
-    east_round_64 = soup.find(id=region).find(class_='team16').find(class_='round', recursive=False)
+    round_64 = soup.find(id=region).find(class_='team16').find(class_='round', recursive=False)
     matchups = []
 
-    games = east_round_64.find_all('div', recursive=False)  # Each game is contained in a div directly under the round div
+    games = round_64.find_all('div', recursive=False)  # Each game is contained in a div directly under the round div
     for game in games:
         teams = game.find_all('div', recursive=False)
         if teams[0].find('span', recursive=False) is not None:
@@ -118,3 +123,80 @@ def read_unplayed_tournament(year, region):
             })
 
     return matchups
+
+def read_unplayed_tournament(year):
+    """
+    Read the unplayed tournament matchups for a given year and region.
+    
+    Args:
+        year (int): The year of the tournament.
+    
+    Returns:
+        list: A list of dictionaries containing matchups.
+    """
+    east_2024_list = read_unplayed_region(year, "east")
+    west_2024_list = read_unplayed_region(year, "west")
+    south_2024_list = read_unplayed_region(year, "south")
+    midwest_2024_list = read_unplayed_region(year, "midwest")
+
+    matchups_dict = {
+        "east": east_2024_list,
+        "west": west_2024_list,
+        "south": south_2024_list,
+        "midwest": midwest_2024_list
+    }
+
+    return matchups_dict
+
+# TODO: USE LINKS TO PLAYER PROFILES IN ROSTER FOR REG SEASON STATS ONLY & EMPERICAL DISTRIBUTION
+def load_player_data(team_link):
+    """
+    Load the roster for a team from the link to the team's SR page.
+    
+    Args:
+        team_link (str): The link to the team's SR page.
+    
+    Returns:
+        player_ppg (dict): A dictionary mapping player names to their average points per game.
+    """
+    # Use requests to get the content of the webpage
+    url = "https://www.sports-reference.com" + team_link
+    response = requests.get(url)
+    html_content = response.text
+
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    # Find the table containing the roster
+    table = soup.find('table', id='players_per_game')
+    
+    if table is None:
+        print(f"Failed to find the roster table for {team_link}.")
+        raise Exception("Failed to find the roster table on the page.")
+    
+    # Parse the table into a DataFrame
+    df = pd.read_html(str(table))[0]
+    df = df[['Player', 'PTS']]
+    df = df.dropna()
+
+    # Remove the 'Player' column if it contains 'Team Totals'
+    df = df[~df['Player'].str.contains('Team Totals', na=False)]
+
+    # Convert the 'PTS' column to numeric
+    df['PTS'] = pd.to_numeric(df['PTS'], errors='coerce')
+    df = df.dropna()
+
+    # Rename PTS col to AVG PTS
+    df = df.rename(columns={'PTS': 'AVG PTS'})
+
+    # Convert the DataFrame to a list of dictionaries
+    raw_ppg = df.to_dict(orient='records')
+    player_ppg = {player['Player']: player['AVG PTS'] for player in raw_ppg}
+
+    return player_ppg
+
+if __name__ == "__main__":
+    # Example of loading a team's roster
+    team_link = "/cbb/schools/connecticut/men/2024.html"
+    ppgs = load_player_data(team_link)
+    for player, ppg in ppgs.items():
+        print(f"{player}: {ppg}")

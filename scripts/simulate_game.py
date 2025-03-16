@@ -87,6 +87,11 @@ sr_to_kenpom = {
     'Michigan State': 'Michigan St.',
     'Long Beach State': 'Long Beach St.',
     'NC State': 'N.C. State',
+    'Grambling': 'Grambling St.',
+    'Utah State': 'Utah St.',
+    'McNeese State': 'McNeese St.',
+    'Colorado State': 'Colorado St.',
+    'St. Peter\'s': 'Saint Peter\'s',
 }
 
 kenpom_ratings_df = full_kenpom_pipeline(year=2024)
@@ -122,3 +127,17 @@ def simulate_game_kenpom(team1, team2):
         return team1
     else:
         return team2
+
+# TODO: SHOULD MAKE THE SIMULATION DATA-BASED INSTEAD OF ASSUMING NORMAL
+def simulate_player_pts(player_avg_pts, variance=1):
+    """
+    Simulate the points scored by a player in a game based on their average points and variance.
+    
+    Args:
+        player_avg_pts (float): The average points scored by the player.
+        variance (float): The variance in the player's scoring. Default is 1.
+        
+    Returns:
+        float: The simulated points scored by the player.
+    """
+    return max(0, np.random.normal(player_avg_pts, variance))

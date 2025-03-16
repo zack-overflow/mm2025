@@ -1,14 +1,6 @@
 from collections import deque
 from simulate_game import simulate_game_kenpom
-
-class Team:
-    def __init__(self, team_name, seed, roster):
-        self.team_name = team_name
-        self.seed = seed
-        self.roster = roster
-
-    def __str__(self):
-        return f"{self.team_name} ({self.seed})"
+from team import Team
 
 class Matchup:
     def __init__(self, team1, team2, location=None):
@@ -73,11 +65,9 @@ class Region:
             # uncertainty could be here in terms of player score (use reg. season to make distribution?)
             # simulation will lead to uncertainty in game outcomes
             
-            # game1winner = np.random.choice([game1.matchup.team1, game1.matchup.team2], p=[0.5, 0.5])
             game1winner = simulate_game_kenpom(game1.matchup.team1, game1.matchup.team2)
             game1.winner = game1winner
 
-            # game2winner = np.random.choice([game2.matchup.team1, game2.matchup.team2], p=[0.5, 0.5])
             game2winner = simulate_game_kenpom(game2.matchup.team1, game2.matchup.team2)
             game2.winner = game2winner
                 
@@ -122,10 +112,6 @@ class Region:
             
             # If the node has children, print them in a bracket-like structure.
             if node.is_leaf():
-                # Print the matchup details
-                t1 = node.matchup.team1
-                t2 = node.matchup.team2
-
                 if node.winner == node.matchup.team1:
                     print(indent + "├──" + f"{green_color}{node.matchup.team1}{reset_color}")
                     print(indent + "└──" + str(node.matchup.team2))
