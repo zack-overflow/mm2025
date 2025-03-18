@@ -1,18 +1,20 @@
 from region import Region, Matchup, Node
 from collections import defaultdict
+from copy import deepcopy
 
 class Tournament:        
-    def __init__(self, east_matchups, west_matchups, south_matchups, midwest_matchups):
+    def __init__(self, east_matchups, west_matchups, south_matchups, midwest_matchups, player_dict):
         self.east = east_matchups
         self.west = west_matchups
         self.south = south_matchups
         self.midwest = midwest_matchups
-        self.players_bookkeeping = None # dict of dicts (team_name -> player_name -> points)
+        self.player_avgs = player_dict
+        self.players_bookkeeping = deepcopy(player_dict) # dict of dicts (team_name -> player_name -> total points scored)
         self.championship = None
 
     def simulate_tournament(self):
         for region in [self.east, self.west, self.south, self.midwest]:
-            region.sim_region()
+            region.sim_region(self.players_bookkeeping)
             # region.print_region()
 
         # final four matchups

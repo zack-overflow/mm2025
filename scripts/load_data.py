@@ -1,8 +1,9 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from kenpompy.misc import get_pomeroy_ratings
+# from kenpompy.misc import get_pomeroy_ratings
 import cloudscraper
+from io import StringIO
 
 def scrape_kenpom_to_df(year=2024):
     """
@@ -175,7 +176,7 @@ def load_player_data_for_team(team_link):
         raise Exception("Failed to find the roster table on the page.")
     
     # Parse the table into a DataFrame
-    df = pd.read_html(str(table))[0]
+    df = pd.read_html(StringIO(str(table)))[0]
     df = df[['Player', 'PTS']]
     df = df.dropna()
 
@@ -191,13 +192,14 @@ def load_player_data_for_team(team_link):
 
     # Convert the DataFrame to a list of dictionaries
     raw_ppg = df.to_dict(orient='records')
-    player_ppg = {player['Player']: player['AVG PTS'] for player in raw_ppg}
+    player_ppg = {player['Player']: {'avg': player['AVG PTS'], 'running_total': 0} for player in raw_ppg}
 
     return player_ppg
 
 if __name__ == "__main__":
     # Example of loading a team's roster
     team_link = "/cbb/schools/connecticut/men/2024.html"
-    ppgs = load_player_data(team_link)
+    ppgs = load_player_data_for_team(team_link)
+    print(ppgs)
     for player, ppg in ppgs.items():
         print(f"{player}: {ppg}")

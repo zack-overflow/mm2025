@@ -1,5 +1,5 @@
 from collections import deque
-from simulate_game import simulate_game_kenpom
+from simulate_game import simulate_game_kenpom, handle_player_bookkeeping_for_team_win
 from team import Team
 
 class Matchup:
@@ -51,7 +51,7 @@ class Region:
         
         return nodes
 
-    def sim_region(self):
+    def sim_region(self, player_bk_dict):
         '''
         Starting from initial matchups, sims a region of the tournament.
         '''
@@ -68,8 +68,15 @@ class Region:
             game1winner = simulate_game_kenpom(game1.matchup.team1, game1.matchup.team2)
             game1.winner = game1winner
 
+            # Handle player bookkeeping for game 1; include seed multiplier
+            handle_player_bookkeeping_for_team_win(player_bk_dict, game1winner)
+            
+            player_bk_dict[game1winner.team_name]
+
             game2winner = simulate_game_kenpom(game2.matchup.team1, game2.matchup.team2)
             game2.winner = game2winner
+
+            
                 
             # create new Game object with the winner of those two games
             new_game = Node(matchup=Matchup(game1winner, game2winner))

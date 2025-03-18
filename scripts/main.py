@@ -14,8 +14,9 @@ def score_strategy(strategy):
     '''
     pass
 
-def simulate_n_tournaments(matchups_dict, N=100):
+def simulate_n_tournaments(matchups_dict, players_dict, N=100):
     champions = defaultdict(int)
+    sims = []
 
     for i in range(N):
         east = Region(matchups_dict["east"])
@@ -23,9 +24,10 @@ def simulate_n_tournaments(matchups_dict, N=100):
         south = Region(matchups_dict["south"])
         midwest = Region(matchups_dict["midwest"])
 
-        tourney = Tournament(east, west, south, midwest)
+        tourney = Tournament(east, west, south, midwest, players_dict)
         tourney.simulate_tournament()
         champ = tourney.championship.winner
+        sims.append(tourney)
 
         champions[str(champ)] += 1
         print(f"---\n---\n Sim {i}, Overall Champion: {champ}")
@@ -34,10 +36,7 @@ def simulate_n_tournaments(matchups_dict, N=100):
     champion_probs = {team: count / N for team, count in champions.items()}
     return champion_probs
 
-def main():
-    year = 2024
-    matchups_dict = read_unplayed_tournament(year=year)
-    
+def load_player_data(year, matchups_dict):
     # Load player ppg data if not already loaded
     try:
         with open(f'player_data_{year}.pkl', 'rb') as f:
@@ -64,6 +63,12 @@ def main():
         with open(f'player_data_{year}.pkl', 'wb') as f:
             pickle.dump(player_data, f)
 
+    return player_data
+
+def main():
+    year = 2024
+    matchups_dict = read_unplayed_tournament(year=year)
+    player = load_player_data(year, matchups_dict)
     probs = simulate_n_tournaments(matchups_dict, N=1000)
 
     # Convert the probabilities to a DataFrame for better readability
@@ -73,4 +78,12 @@ def main():
 
     return df
 
-print(main())
+def convert_player_data(old_file):
+    with open(old_file, 'rb') as f:
+            player_data = pickle.load(f)
+
+    print(player_data)
+
+# print(main())
+# load_player_data(2024)
+convert_player_data('player_data_2024.pkl')
