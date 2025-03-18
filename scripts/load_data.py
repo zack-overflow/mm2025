@@ -1,5 +1,8 @@
-import pandas as pd
 import requests
+import pickle
+import time
+import os
+import pandas as pd
 from bs4 import BeautifulSoup
 # from kenpompy.misc import get_pomeroy_ratings
 import cloudscraper
@@ -195,6 +198,36 @@ def load_player_data_for_team(team_link):
     player_ppg = {player['Player']: {'avg': player['AVG PTS'], 'running_total': 0} for player in raw_ppg}
 
     return player_ppg
+
+def load_player_data(year, matchups_dict):
+    # Load player ppg data if not already loaded
+    try:
+        print(os.getcwd())
+        with open(f'./scripts/NEW_player_data_{year}.pkl', 'rb') as f:
+            player_data = pickle.load(f)
+    except FileNotFoundError:
+        player_data = {}
+        for region in matchups_dict.values():
+            for matchup in region:
+                team1 = matchup['team_1']
+                team2 = matchup['team_2']
+
+                if team1['name'] not in player_data:
+                    player_data[team1['name']] = load_player_data_for_team(team1['link'])
+                if team2['name'] not in player_data:
+                    player_data[team2['name']] = load_player_data_for_team(team2['link'])
+                
+                # Simulate a delay to avoid overwhelming the server
+                time.sleep(3.6)
+        
+        print("Player data loaded successfully.")
+        print(player_data)
+
+        # Save player data dictionary to a file
+        with open(f'player_data_{year}.pkl', 'wb') as f:
+            pickle.dump(player_data, f)
+
+    return player_data
 
 if __name__ == "__main__":
     # Example of loading a team's roster

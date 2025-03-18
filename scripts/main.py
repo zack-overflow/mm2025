@@ -1,75 +1,14 @@
-import time
 import pickle
 import pandas as pd
-from collections import defaultdict
-from region import Region
-from tournament import Tournament
-from load_data import read_unplayed_tournament, load_player_data_for_team
-
-def score_strategy(strategy):
-    '''
-    Need to come up with a score for a certain strategy. Would also be nice to represent the uncertainty somehow.
-
-    Input: a dict representing the players chosen
-    '''
-    pass
-
-def simulate_n_tournaments(matchups_dict, players_dict, N=100):
-    champions = defaultdict(int)
-    sims = []
-
-    for i in range(N):
-        east = Region(matchups_dict["east"])
-        west = Region(matchups_dict["west"])
-        south = Region(matchups_dict["south"])
-        midwest = Region(matchups_dict["midwest"])
-
-        tourney = Tournament(east, west, south, midwest, players_dict)
-        tourney.simulate_tournament()
-        champ = tourney.championship.winner
-        sims.append(tourney)
-
-        champions[str(champ)] += 1
-        print(f"---\n---\n Sim {i}, Overall Champion: {champ}")
-
-    # Convert to probabilities
-    champion_probs = {team: count / N for team, count in champions.items()}
-    return champion_probs
-
-def load_player_data(year, matchups_dict):
-    # Load player ppg data if not already loaded
-    try:
-        with open(f'player_data_{year}.pkl', 'rb') as f:
-            player_data = pickle.load(f)
-    except FileNotFoundError:
-        player_data = {}
-        for region in matchups_dict.values():
-            for matchup in region:
-                team1 = matchup['team_1']
-                team2 = matchup['team_2']
-
-                if team1['name'] not in player_data:
-                    player_data[team1['name']] = load_player_data_for_team(team1['link'])
-                if team2['name'] not in player_data:
-                    player_data[team2['name']] = load_player_data_for_team(team2['link'])
-                
-                # Simulate a delay to avoid overwhelming the server
-                time.sleep(3.6)
-        
-        print("Player data loaded successfully.")
-        print(player_data)
-
-        # Save player data dictionary to a file
-        with open(f'player_data_{year}.pkl', 'wb') as f:
-            pickle.dump(player_data, f)
-
-    return player_data
+from simulate_tournament import simulate_n_tournaments
+# from load_data import read_unplayed_tournament, load_player_data_for_team, load_player_data
 
 def main():
     year = 2024
-    matchups_dict = read_unplayed_tournament(year=year)
+    kenpom_ratings_df = full_kenpom_pipeline(year)
+    matchups_dict = read_unplayed_tournament(year)
     player = load_player_data(year, matchups_dict)
-    probs = simulate_n_tournaments(matchups_dict, N=1000)
+    probs, sims = simulate_n_tournaments(matchups_dict, player, kenpom_ratings_df, N=1000)
 
     # Convert the probabilities to a DataFrame for better readability
     df = pd.DataFrame(probs.items(), columns=['Team', 'Probability'])
@@ -82,8 +21,16 @@ def convert_player_data(old_file):
     with open(old_file, 'rb') as f:
             player_data = pickle.load(f)
 
-    print(player_data)
+    new = {}
+    for team in player_data:
+        new[team] = {}
+        for player in player_data[team]:
+            new[team][player] = {'avg': player_data[team][player], 'running_total': 0}
 
-# print(main())
-# load_player_data(2024)
-convert_player_data('player_data_2024.pkl')
+    with open(f'NEW_player_data_2024.pkl', 'wb') as f:
+            pickle.dump(new, f)
+        
+
+print(main())
+# convert_player_data('player_data_2024.pkl')
+# print(load_player_data(2024, {}))

@@ -1,22 +1,6 @@
 from collections import deque
-from simulate_game import simulate_game_kenpom, handle_player_bookkeeping_for_team_win
-from team import Team
-
-class Matchup:
-    def __init__(self, team1, team2, location=None):
-        self.team1 = team1
-        self.team2 = team2
-        self.location = location
-
-    @classmethod
-    def parse_matchup(cls, matchup_dict):
-        """
-        Parses a matchup string in the format "Team1 vs Team2" and returns a Matchup object.
-        """
-        t1 = Team(matchup_dict['team_1']['name'], matchup_dict['team_1']['seed'], matchup_dict['team_1']['link'])
-        t2 = Team(matchup_dict['team_2']['name'], matchup_dict['team_2']['seed'], matchup_dict['team_2']['link'])
-        
-        return cls(t1, t2, matchup_dict['location'])
+from simulate_game import simulate_game_kenpom, handle_player_bookkeeping_for_team
+from matchup import Matchup
 
 class Node:
     def __init__(self, matchup=None, left=None, right=None, parent=None):
@@ -51,7 +35,7 @@ class Region:
         
         return nodes
 
-    def sim_region(self, player_bk_dict):
+    def sim_region(self, ratings_df, player_bk_dict):
         '''
         Starting from initial matchups, sims a region of the tournament.
         '''
@@ -65,19 +49,22 @@ class Region:
             # uncertainty could be here in terms of player score (use reg. season to make distribution?)
             # simulation will lead to uncertainty in game outcomes
             
-            game1winner = simulate_game_kenpom(game1.matchup.team1, game1.matchup.team2)
+            game1winner = simulate_game_kenpom(game1.matchup.team1, game1.matchup.team2, ratings_df)
             game1.winner = game1winner
 
             # Handle player bookkeeping for game 1; include seed multiplier
-            handle_player_bookkeeping_for_team_win(player_bk_dict, game1winner)
+            handle_player_bookkeeping_for_team(player_bk_dict, game1.matchup.team1)
+            handle_player_bookkeeping_for_team(player_bk_dict, game1.matchup.team2)
             
             player_bk_dict[game1winner.team_name]
 
-            game2winner = simulate_game_kenpom(game2.matchup.team1, game2.matchup.team2)
+            game2winner = simulate_game_kenpom(game2.matchup.team1, game2.matchup.team2, ratings_df)
             game2.winner = game2winner
 
-            
-                
+            # Handle player bookkeeping for game 2; include seed multiplier
+            handle_player_bookkeeping_for_team(player_bk_dict, game2.matchup.team1)
+            handle_player_bookkeeping_for_team(player_bk_dict, game2.matchup.team2)
+
             # create new Game object with the winner of those two games
             new_game = Node(matchup=Matchup(game1winner, game2winner))
             
@@ -95,7 +82,7 @@ class Region:
         # sim championship
         if len(self.matchup_q) == 1:
             final_game = self.matchup_q.popleft()
-            champ = simulate_game_kenpom(final_game.matchup.team1, final_game.matchup.team2)
+            champ = simulate_game_kenpom(final_game.matchup.team1, final_game.matchup.team2, ratings_df)
             
             final_game.winner = champ
         

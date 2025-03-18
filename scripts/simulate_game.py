@@ -94,8 +94,6 @@ sr_to_kenpom = {
     'St. Peter\'s': 'Saint Peter\'s',
 }
 
-kenpom_ratings_df = full_kenpom_pipeline(year=2024)
-
 def wp_kenpom(team1, team2, ratings_df, sd=11):
     # Extract ratings for each team in the matchup
     # First, check if team name is in the kenpom teams
@@ -118,7 +116,7 @@ def wp_kenpom(team1, team2, ratings_df, sd=11):
 
     return prob_team1_wins
 
-def simulate_game_kenpom(team1, team2):
+def simulate_game_kenpom(team1, team2, kenpom_ratings_df):
     # Calculate the probability of team1 winning
     prob_team1_wins = wp_kenpom(team1, team2, kenpom_ratings_df)
 
@@ -128,23 +126,29 @@ def simulate_game_kenpom(team1, team2):
     else:
         return team2
 
-# TODO: SHOULD MAKE THE SIMULATION DATA-BASED INSTEAD OF ASSUMING NORMAL WITH VAR OF 5
-def simulate_player_pts(player_avg_pts, variance=5):
+# TODO: SHOULD MAKE THE SIMULATION DATA-BASED INSTEAD OF ASSUMING NORMAL
+def simulate_player_pts(player_avg_pts, variance=None):
     """
     Simulate the points scored by a player in a game based on their average points and variance.
     
     Args:
         player_avg_pts (float): The average points scored by the player.
-        variance (float): The variance in the player's scoring. Default is 1.
+        variance (float): The variance in the player's scoring. Default is avg/5.
         
     Returns:
         float: The simulated points scored by the player.
     """
+    if variance is None:
+        variance = player_avg_pts / 5
     return max(0, np.random.normal(player_avg_pts, variance))
 
-def handle_player_bookkeeping_for_team_win(player_bk_dict, winning_team_ref):
-    winning_seed = winning_team_ref.seed
+def handle_player_bookkeeping_for_team(player_bk_dict, winning_team_ref):
+    winning_team_multiplier = winning_team_ref.get_multiplier()
     winning_team_dict = player_bk_dict[winning_team_ref.team_name]
 
     # sample from player pts and add to running total, including seed multiplier
+    for player in winning_team_dict:
+        player_ppg = simulate_player_pts(player['avg'])
+        increment = player_ppg * winning_team_multiplier
+        player['running_total'] += increment
     
