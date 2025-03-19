@@ -1,11 +1,14 @@
 Docket:
-* Keep track of player points
-* Select best players
 * Read played tournaments/competitions and backtest selection methods
     * Will probably need to capitalize all names to ensure compatibility
     * Q: How does number of participants impact the risk we should take on?
+* Learn empirical distribution of player points
+* Use Player class instead of dictionary and have Team objects store roster of players
 * Decouple program's design from structure of data sources (EE)
     * Region is just a small tournament
     * Matchup should be a node
+* Parallelize simulations
 
 Done:
+[x] Keep track of player points
+[x] Select best players

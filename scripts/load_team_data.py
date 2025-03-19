@@ -1,12 +1,8 @@
 import requests
-import pickle
-import time
-import os
 import pandas as pd
 from bs4 import BeautifulSoup
 # from kenpompy.misc import get_pomeroy_ratings
 import cloudscraper
-from io import StringIO
 
 def scrape_kenpom_to_df(year=2024):
     """
@@ -65,7 +61,7 @@ def clean_kenpom_df(kenpom_df):
     kenpom_df.drop(kenpom_df[kenpom_df['Team'] == 'Team'].index, inplace=True)
 
     # remove seed numbers
-    kenpom_df['Team'] = kenpom_df['Team'].str.replace(r' \d{1,2}', '', regex=True)
+    kenpom_df['Team'] = kenpom_df['Team'].str.replace(r' \d{1,2}\*', '', regex=True)
 
     return kenpom_df
 
@@ -153,86 +149,3 @@ def read_unplayed_tournament(year):
 
     return matchups_dict
 
-# TODO: USE LINKS TO PLAYER PROFILES IN ROSTER FOR REG SEASON STATS ONLY & EMPERICAL DISTRIBUTION
-def load_player_data_for_team(team_link):
-    """
-    Load the roster for a team from the link to the team's SR page.
-    
-    Args:
-        team_link (str): The link to the team's SR page.
-    
-    Returns:
-        player_ppg (dict): A dictionary mapping player names to their average points per game.
-    """
-    # Use requests to get the content of the webpage
-    url = "https://www.sports-reference.com" + team_link
-    response = requests.get(url)
-    html_content = response.text
-
-    soup = BeautifulSoup(html_content, 'html.parser')
-
-    # Find the table containing the roster
-    table = soup.find('table', id='players_per_game')
-    
-    if table is None:
-        print(f"Failed to find the roster table for {team_link}.")
-        raise Exception("Failed to find the roster table on the page.")
-    
-    # Parse the table into a DataFrame
-    df = pd.read_html(StringIO(str(table)))[0]
-    df = df[['Player', 'PTS']]
-    df = df.dropna()
-
-    # Remove the 'Player' column if it contains 'Team Totals'
-    df = df[~df['Player'].str.contains('Team Totals', na=False)]
-
-    # Convert the 'PTS' column to numeric
-    df['PTS'] = pd.to_numeric(df['PTS'], errors='coerce')
-    df = df.dropna()
-
-    # Rename PTS col to AVG PTS
-    df = df.rename(columns={'PTS': 'AVG PTS'})
-
-    # Convert the DataFrame to a list of dictionaries
-    raw_ppg = df.to_dict(orient='records')
-    player_ppg = {player['Player']: {'avg': player['AVG PTS'], 'running_total': 0} for player in raw_ppg}
-
-    return player_ppg
-
-def load_player_data(year, matchups_dict):
-    # Load player ppg data if not already loaded
-    try:
-        print(os.getcwd())
-        with open(f'./scripts/NEW_player_data_{year}.pkl', 'rb') as f:
-            player_data = pickle.load(f)
-    except FileNotFoundError:
-        player_data = {}
-        for region in matchups_dict.values():
-            for matchup in region:
-                team1 = matchup['team_1']
-                team2 = matchup['team_2']
-
-                if team1['name'] not in player_data:
-                    player_data[team1['name']] = load_player_data_for_team(team1['link'])
-                if team2['name'] not in player_data:
-                    player_data[team2['name']] = load_player_data_for_team(team2['link'])
-                
-                # Simulate a delay to avoid overwhelming the server
-                time.sleep(3.6)
-        
-        print("Player data loaded successfully.")
-        print(player_data)
-
-        # Save player data dictionary to a file
-        with open(f'player_data_{year}.pkl', 'wb') as f:
-            pickle.dump(player_data, f)
-
-    return player_data
-
-if __name__ == "__main__":
-    # Example of loading a team's roster
-    team_link = "/cbb/schools/connecticut/men/2024.html"
-    ppgs = load_player_data_for_team(team_link)
-    print(ppgs)
-    for player, ppg in ppgs.items():
-        print(f"{player}: {ppg}")

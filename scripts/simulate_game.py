@@ -1,5 +1,5 @@
 import numpy as np
-from load_data import full_kenpom_pipeline
+from load_team_data import full_kenpom_pipeline
 
 sr_to_kenpom = {
     'Brigham Young': 'BYU',
@@ -148,7 +148,8 @@ def handle_player_bookkeeping_for_team(player_bk_dict, winning_team_ref):
 
     # sample from player pts and add to running total, including seed multiplier
     for player in winning_team_dict:
-        player_ppg = simulate_player_pts(player['avg'])
+        player_stats = winning_team_dict[player]
+        player_ppg = simulate_player_pts(player_stats['avg'])
         increment = player_ppg * winning_team_multiplier
-        player['running_total'] += increment
+        player_stats['running_total'] += increment
     
