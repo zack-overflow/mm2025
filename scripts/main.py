@@ -18,20 +18,6 @@ def main():
 
     return df, sims
 
-def convert_player_data(old_file):
-    with open(old_file, 'rb') as f:
-            player_data = pickle.load(f)
-
-    new = {}
-    for team in player_data:
-        new[team] = {}
-        for player in player_data[team]:
-            new[team][player] = {'avg': player_data[team][player], 'running_total': 0}
-
-    with open(f'NEW_player_data_2024.pkl', 'wb') as f:
-            pickle.dump(new, f)
-        
-
 # print(main())
 # convert_player_data('player_data_2024.pkl')
 # print(load_player_data(2024, {}))
