@@ -1,5 +1,6 @@
 Docket:
 * Read played tournaments/competitions and backtest selection methods
+    * Only really possible with kenpom data since they go back further
     * Will probably need to capitalize all names to ensure compatibility
     * Q: How does number of participants impact the risk we should take on?
 * Learn empirical distribution of player points
@@ -7,6 +8,7 @@ Docket:
 * Decouple program's design from structure of data sources (EE)
     * Region is just a small tournament
     * Matchup should be a node
+* Make model internally consistent (i.e. update team ratings based of games during the simulation)
 * Parallelize simulations
 
 Done:

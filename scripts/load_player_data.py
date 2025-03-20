@@ -124,7 +124,9 @@ def load_player_data_for_team(team_link, year):
 
     player_dict = {}
     for player in raw_ppg:
-        player_dict[player['name_display']] = {'ppg': player['pts_per_g'], 'running_total_simulated': 0, 'link': player['player_link'], 'ground_truth_total': get_player_tournament_pts(player['player_link'], year)}
+        player_dict[player['name_display']] = {'ppg': player['pts_per_g'], 'running_total_simulated': 0, 'link': player['player_link']}
+        if year != '2025':
+            player_dict['ground_truth_total'] = get_player_tournament_pts(player['player_link'], year)
         time.sleep(3.6) # Simulate a delay to avoid overwhelming the server
 
     return player_dict
@@ -132,7 +134,7 @@ def load_player_data_for_team(team_link, year):
 def load_player_data(year, matchups_dict):
     # Load player ppg data if not already loaded
     try:
-        with open(f'player_data_{year}.pkl', 'rb') as f:
+        with open(f'player_data_{year}_COMPLETE.pkl', 'rb') as f:
             player_data = pickle.load(f)
     except FileNotFoundError:
         player_data = {}
@@ -148,13 +150,16 @@ def load_player_data(year, matchups_dict):
 
                 # Simulate a delay to avoid overwhelming the server
                 time.sleep(3.6)
-                print(player_data)
+                print(f"Loaded player data for {team1['name']} and {team2['name']}")
+                print(player_data[team1['name']])
+                print(player_data[team2['name']])
+                
+                # Save the player data to a pickle file for future use
+                with open(f'player_data_{year}.pkl', 'wb') as f:
+                    pickle.dump(player_data, f)
+
 
         print("Player data loaded successfully.")
         print(player_data)
-
-        # Save player data dictionary to a file
-        with open(f'player_data_{year}.pkl', 'wb') as f:
-            pickle.dump(player_data, f)
 
     return player_data

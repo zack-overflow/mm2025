@@ -11,9 +11,9 @@ class Tournament:
         self.players_bookkeeping = deepcopy(player_dict) # dict of dicts (team_name -> player_name -> total points scored)
         self.championship = None
 
-    def simulate_tournament(self, ratings_df):
+    def simulate_tournament(self, ratings_df, method):
         for region in [self.east, self.west, self.south, self.midwest]:
-            region.sim_region(ratings_df, self.players_bookkeeping)
+            region.sim_region(ratings_df, self.players_bookkeeping, method)
             # region.print_region()
 
         # final four matchups
@@ -24,7 +24,7 @@ class Tournament:
         final_four = Region([])
         final_four.matchup_q.append(ew_node)
         final_four.matchup_q.append(sm_node)
-        final_four.sim_region(ratings_df, self.players_bookkeeping)
+        final_four.sim_region(ratings_df, self.players_bookkeeping, method)
         self.championship = final_four.championship
 
     def bracket_distance(team1, team2):

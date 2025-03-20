@@ -18,7 +18,7 @@ def score_strategy(strategy, sims):
         bk = sim.players_bookkeeping
         total = 0
         for team, player in strategy:
-            player_simmed_pts = bk[team][player]['running_total']
+            player_simmed_pts = bk[team][player]['running_total_simulated']
             total += player_simmed_pts
         
         scores.append(total)

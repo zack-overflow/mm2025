@@ -1,5 +1,5 @@
 class Player:
-    def __init__(self, name, ppg, link, ground_truth_total):
+    def __init__(self, name, ppg, link, ground_truth_total=None):
         self.name = name
         self.ppg = ppg
         self.link = link

@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 # from kenpompy.misc import get_pomeroy_ratings
 import cloudscraper
 
-def scrape_kenpom_to_df(year=2024):
+def scrape_kenpom_to_df(year=2025):
     """
     Scrape KenPom data and return it as a pandas DataFrame.
     
@@ -13,7 +13,7 @@ def scrape_kenpom_to_df(year=2024):
     """
     # Use cloudscraper to bypass Cloudflare protection
     scraper = cloudscraper.create_scraper()
-    # print(get_pomeroy_ratings(browser=scraper, season='2024'))
+    # print(get_pomeroy_ratings(browser=scraper, season='2025'))
     
     url = f"https://kenpom.com/index.php?y={year}"
     response = scraper.get(url)
@@ -61,11 +61,11 @@ def clean_kenpom_df(kenpom_df):
     kenpom_df.drop(kenpom_df[kenpom_df['Team'] == 'Team'].index, inplace=True)
 
     # remove seed numbers
-    kenpom_df['Team'] = kenpom_df['Team'].str.replace(r' \d{1,2}\*', '', regex=True)
+    kenpom_df['Team'] = kenpom_df['Team'].str.replace(r' \d{1,2}[\*]?', '', regex=True)
 
     return kenpom_df
 
-def full_kenpom_pipeline(year=2024):
+def full_kenpom_pipeline(year=2025):
     """
     Full pipeline to scrape, clean, and return KenPom data as a DataFrame.
     
@@ -135,17 +135,46 @@ def read_unplayed_tournament(year):
     Returns:
         list: A list of dictionaries containing matchups.
     """
-    east_2024_list = read_unplayed_region(year, "east")
-    west_2024_list = read_unplayed_region(year, "west")
-    south_2024_list = read_unplayed_region(year, "south")
-    midwest_2024_list = read_unplayed_region(year, "midwest")
+    east_list = read_unplayed_region(year, "east")
+    west_list = read_unplayed_region(year, "west")
+    south_list = read_unplayed_region(year, "south")
+    midwest_list = read_unplayed_region(year, "midwest")
 
     matchups_dict = {
-        "east": east_2024_list,
-        "west": west_2024_list,
-        "south": south_2024_list,
-        "midwest": midwest_2024_list
+        "east": east_list,
+        "west": west_list,
+        "south": south_list,
+        "midwest": midwest_list
     }
 
     return matchups_dict
 
+def parse_silver_ratings(silver_path):
+    """
+    Parse the Silver Bulletin ratings DataFrame to extract team names and their corresponding ratings.
+    
+    Args:
+        silver_df (pd.DataFrame): The Silver ratings DataFrame.
+    
+    Returns:
+        silver_df: A dataframe mapping team names to their ratings.
+    """
+    silver_df = pd.read_csv(silver_path, sep='\t')
+    
+    # Extract the relevant columns
+    silver_df = silver_df[['Team', 'Quasi-Sagarin']]
+    
+    return silver_df
+
+if __name__ == "__main__":
+    # Example usage
+    year = 2025
+    kenpom_df = full_kenpom_pipeline(year)
+    print(kenpom_df.head())
+
+    matchups = read_unplayed_tournament(year)
+    print(matchups)
+
+    silver_path = '../data/silver.csv'  # Replace with actual path
+    silver_df = parse_silver_ratings(silver_path)
+    print(silver_df.head())

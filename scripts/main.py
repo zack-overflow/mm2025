@@ -5,7 +5,7 @@ from load_player_data import load_player_data
 from simulate_tournament import simulate_n_tournaments
 
 def main():
-    year = 2024
+    year = 2025
     kenpom_ratings_df = full_kenpom_pipeline(year)
     matchups_dict = read_unplayed_tournament(year)
     player = load_player_data(year, matchups_dict)
@@ -17,19 +17,6 @@ def main():
     df.reset_index(drop=True, inplace=True)
 
     return df, sims
-
-def convert_player_data(old_file):
-    with open(old_file, 'rb') as f:
-            player_data = pickle.load(f)
-
-    new = {}
-    for team in player_data:
-        new[team] = {}
-        for player in player_data[team]:
-            new[team][player] = {'avg': player_data[team][player], 'running_total': 0}
-
-    with open(f'NEW_player_data_2024.pkl', 'wb') as f:
-            pickle.dump(new, f)
         
 
 # print(main())
