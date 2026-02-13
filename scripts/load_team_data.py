@@ -85,6 +85,10 @@ def full_kenpom_pipeline(year=2025):
     
     return kenpom_df
 
+def read_played_region(year, region):
+    # similar to unplayed except we find_all for this: round_64 = soup.find(id=region).find(class_='team16').find(class_='round', recursive=False)
+    pass
+
 def read_unplayed_region(year, region):
     BASE_URL = "https://www.sports-reference.com/cbb/postseason/men/{}-ncaa.html"
     url = BASE_URL.format(year)
@@ -168,7 +172,7 @@ def parse_silver_ratings(silver_path):
 
 if __name__ == "__main__":
     # Example usage
-    year = 2025
+    year = 2023
     kenpom_df = full_kenpom_pipeline(year)
     print(kenpom_df.head())
 

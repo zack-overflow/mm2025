@@ -4,6 +4,7 @@ class Team:
         self.seed = int(seed)
         self.link = link
         # self.roster = load_team_roster(link)
+        self.games_played = 0
 
     def get_multiplier(self):
         if self.seed < 6:
