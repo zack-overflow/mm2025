@@ -1,24 +1,25 @@
-import pandas as pd
 import requests
+import pandas as pd
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
+# from kenpompy.misc import get_pomeroy_ratings
+import cloudscraper
 
-def scrape_kenpom_to_df(year=2024):
+def scrape_kenpom_to_df(year=2025):
     """
     Scrape KenPom data and return it as a pandas DataFrame.
     
     Returns:
         pd.DataFrame: DataFrame containing KenPom data.
     """
+    # Use cloudscraper to bypass Cloudflare protection
+    scraper = cloudscraper.create_scraper()
+    # print(get_pomeroy_ratings(browser=scraper, season='2025'))
+    
     url = f"https://kenpom.com/index.php?y={year}"
-    # Assign random user agent to avoid being blocked
-    headers = {
-        'User-Agent': UserAgent().random
-    }
-
-    response = requests.get(url, headers=headers)
+    response = scraper.get(url)
     
     if response.status_code != 200:
+        print(f"Error: {response.status}")
         print(response)
         raise Exception(f"Failed to fetch data from {url}")
     
@@ -60,11 +61,11 @@ def clean_kenpom_df(kenpom_df):
     kenpom_df.drop(kenpom_df[kenpom_df['Team'] == 'Team'].index, inplace=True)
 
     # remove seed numbers
-    kenpom_df['Team'] = kenpom_df['Team'].str.replace(r' \d{1,2}', '', regex=True)
+    kenpom_df['Team'] = kenpom_df['Team'].str.replace(r' \d{1,2}[\*]?', '', regex=True)
 
     return kenpom_df
 
-def full_kenpom_pipeline(year=2024):
+def full_kenpom_pipeline(year=2025):
     """
     Full pipeline to scrape, clean, and return KenPom data as a DataFrame.
     
@@ -134,69 +135,46 @@ def read_unplayed_tournament(year):
     Returns:
         list: A list of dictionaries containing matchups.
     """
-    east_2024_list = read_unplayed_region(year, "east")
-    west_2024_list = read_unplayed_region(year, "west")
-    south_2024_list = read_unplayed_region(year, "south")
-    midwest_2024_list = read_unplayed_region(year, "midwest")
+    east_list = read_unplayed_region(year, "east")
+    west_list = read_unplayed_region(year, "west")
+    south_list = read_unplayed_region(year, "south")
+    midwest_list = read_unplayed_region(year, "midwest")
 
     matchups_dict = {
-        "east": east_2024_list,
-        "west": west_2024_list,
-        "south": south_2024_list,
-        "midwest": midwest_2024_list
+        "east": east_list,
+        "west": west_list,
+        "south": south_list,
+        "midwest": midwest_list
     }
 
     return matchups_dict
 
-# TODO: USE LINKS TO PLAYER PROFILES IN ROSTER FOR REG SEASON STATS ONLY & EMPERICAL DISTRIBUTION
-def load_player_data(team_link):
+def parse_silver_ratings(silver_path):
     """
-    Load the roster for a team from the link to the team's SR page.
+    Parse the Silver Bulletin ratings DataFrame to extract team names and their corresponding ratings.
     
     Args:
-        team_link (str): The link to the team's SR page.
+        silver_df (pd.DataFrame): The Silver ratings DataFrame.
     
     Returns:
-        player_ppg (dict): A dictionary mapping player names to their average points per game.
+        silver_df: A dataframe mapping team names to their ratings.
     """
-    # Use requests to get the content of the webpage
-    url = "https://www.sports-reference.com" + team_link
-    response = requests.get(url)
-    html_content = response.text
-
-    soup = BeautifulSoup(html_content, 'html.parser')
-
-    # Find the table containing the roster
-    table = soup.find('table', id='players_per_game')
+    silver_df = pd.read_csv(silver_path, sep='\t')
     
-    if table is None:
-        print(f"Failed to find the roster table for {team_link}.")
-        raise Exception("Failed to find the roster table on the page.")
+    # Extract the relevant columns
+    silver_df = silver_df[['Team', 'Quasi-Sagarin']]
     
-    # Parse the table into a DataFrame
-    df = pd.read_html(str(table))[0]
-    df = df[['Player', 'PTS']]
-    df = df.dropna()
-
-    # Remove the 'Player' column if it contains 'Team Totals'
-    df = df[~df['Player'].str.contains('Team Totals', na=False)]
-
-    # Convert the 'PTS' column to numeric
-    df['PTS'] = pd.to_numeric(df['PTS'], errors='coerce')
-    df = df.dropna()
-
-    # Rename PTS col to AVG PTS
-    df = df.rename(columns={'PTS': 'AVG PTS'})
-
-    # Convert the DataFrame to a list of dictionaries
-    raw_ppg = df.to_dict(orient='records')
-    player_ppg = {player['Player']: player['AVG PTS'] for player in raw_ppg}
-
-    return player_ppg
+    return silver_df
 
 if __name__ == "__main__":
-    # Example of loading a team's roster
-    team_link = "/cbb/schools/connecticut/men/2024.html"
-    ppgs = load_player_data(team_link)
-    for player, ppg in ppgs.items():
-        print(f"{player}: {ppg}")
+    # Example usage
+    year = 2025
+    kenpom_df = full_kenpom_pipeline(year)
+    print(kenpom_df.head())
+
+    matchups = read_unplayed_tournament(year)
+    print(matchups)
+
+    silver_path = '../data/silver.csv'  # Replace with actual path
+    silver_df = parse_silver_ratings(silver_path)
+    print(silver_df.head())

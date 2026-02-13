@@ -1,18 +1,19 @@
 from region import Region, Matchup, Node
 from collections import defaultdict
+from copy import deepcopy
 
 class Tournament:        
-    def __init__(self, east_matchups, west_matchups, south_matchups, midwest_matchups):
+    def __init__(self, east_matchups, west_matchups, south_matchups, midwest_matchups, player_dict):
         self.east = east_matchups
         self.west = west_matchups
         self.south = south_matchups
         self.midwest = midwest_matchups
-        self.players_bookkeeping = None # dict of dicts (team_name -> player_name -> points)
+        self.players_bookkeeping = deepcopy(player_dict) # dict of dicts (team_name -> player_name -> total points scored)
         self.championship = None
 
-    def simulate_tournament(self):
+    def simulate_tournament(self, ratings_df, method):
         for region in [self.east, self.west, self.south, self.midwest]:
-            region.sim_region()
+            region.sim_region(ratings_df, self.players_bookkeeping, method)
             # region.print_region()
 
         # final four matchups
@@ -23,7 +24,7 @@ class Tournament:
         final_four = Region([])
         final_four.matchup_q.append(ew_node)
         final_four.matchup_q.append(sm_node)
-        final_four.sim_region()
+        final_four.sim_region(ratings_df, self.players_bookkeeping, method)
         self.championship = final_four.championship
 
     def bracket_distance(team1, team2):
