@@ -1,4 +1,7 @@
 Docket:
+* Include defensive stats and tempo in player score projections
+    * Can predict game score and then assign points to players based on their usage
+    * Probably smart to give more pts to players when their team wins (but predicting game score accounts for this)
 * Read played tournaments/competitions and backtest selection methods
     * Only really possible with kenpom data since they go back further
     * Will probably need to capitalize all names to ensure compatibility

@@ -1,128 +1,8 @@
 import numpy as np
 from scipy.stats import norm
 from load_team_data import full_kenpom_pipeline
+from constants import PP_TO_SILVER_MAP, sr_to_kenpom, sr_to_silver
 
-sr_to_kenpom = {
-    'Brigham Young': 'BYU',
-    'Saint Mary\'s (CA)': 'Saint Mary\'s',
-    'St. John\'s (NY)': 'St. John\'s',
-    'Pittsburgh': 'Pittsburgh',
-    'Mississippi State': 'Mississippi St.',
-    'Central Florida': 'UCF',
-    'Virginia Commonwealth': 'VCU',
-    'Southern California': 'USC',
-    'Ole Miss': 'Mississippi',
-    'Massachusetts': 'UMass',
-    'Miami (FL)': 'Miami FL',
-    'Nevada-Las Vegas': 'UNLV',
-    'North Carolina State': 'N.C. State',
-    'Louisiana State': 'LSU',
-    'Connecticut': 'Connecticut',
-    'North Carolina': 'North Carolina',
-    'Pittsburgh': 'Pittsburgh',
-    'St. John\'s (NY)': 'St. John\'s',
-    'Louisiana State': 'LSU',
-    'Central Florida': 'UCF',
-    'Texas A&M-Corpus Christi': 'Texas A&M Corpus Chris',
-    'Purdue Fort Wayne': 'Purdue Fort Wayne',
-    'Loyola (IL)': 'Loyola Chicago',
-    'College of Charleston': 'Charleston',
-    'Loyola (IL)': 'Loyola Chicago',
-    'Saint Joseph\'s': 'Saint Joseph\'s',
-    'Saint Francis (PA)': 'Saint Francis',
-    'Arkansas-Pine Bluff': 'Arkansas Pine Bluff',
-    'SIU Edwardsville': 'SIU Edwardsville',
-    'Maryland-Baltimore County': 'UMBC',
-    'Maryland-Eastern Shore': 'Maryland Eastern Shore',
-    'Massachusetts-Lowell': 'UMass Lowell',
-    'Charleston Southern': 'Charleston Southern',
-    'East Tennessee State': 'East Tennessee St.',
-    'Florida International': 'FIU',
-    'Loyola (IL)': 'Loyola Chicago',
-    'Albany (NY)': 'Albany',
-    'College of Charleston': 'Charleston',
-    'Detroit Mercy': 'Detroit Mercy',
-    'LIU': 'LIU',
-    'North Carolina State': 'N.C. State',
-    'Southeast Missouri State': 'Southeast Missouri St.',
-    'Louisiana-Monroe': 'Louisiana Monroe',
-    'Nicholls State': 'Nicholls St.',
-    'Middle Tennessee': 'Middle Tennessee',
-    'UMass Lowell': 'UMass Lowell',
-    'UNC Asheville': 'UNC Asheville',
-    'UNC Greensboro': 'UNC Greensboro',
-    'UNC Wilmington': 'UNC Wilmington',
-    'Texas-Rio Grande Valley': 'UT Rio Grande Valley',
-    'Western Carolina': 'Western Carolina',
-    'Northern Illinois': 'Northern Illinois',
-    'Southern Illinois': 'Southern Illinois',
-    'Fairleigh Dickinson': 'Fairleigh Dickinson',
-    'Alcorn State': 'Alcorn St.',
-    'Cal State Bakersfield': 'Cal St. Bakersfield',
-    'Cal State Fullerton': 'Cal St. Fullerton',
-    'Cal State Northridge': 'Cal St. Northridge',
-    'Prairie View': 'Prairie View A&M',
-    'Southern Methodist': 'SMU',
-    'Southern Mississippi': 'Southern Miss',
-    'East Tennessee State': 'East Tennessee St.',
-    'Eastern Illinois': 'Eastern Illinois',
-    'Eastern Kentucky': 'Eastern Kentucky',
-    'Eastern Michigan': 'Eastern Michigan',
-    'Eastern Washington': 'Eastern Washington',
-    'Illinois-Chicago': 'Illinois Chicago',
-    'Kansas City': 'UMKC',
-    'Louisiana-Monroe': 'Louisiana Monroe',
-    'Maryland-Eastern Shore': 'Maryland Eastern Shore',
-    'Tennessee-Martin': 'Tennessee Martin',
-    'Texas Southern': 'Texas Southern',
-    'North Dakota State': 'North Dakota St.',
-    'Southeast Missouri State': 'Southeast Missouri St.',
-    'Virginia Commonwealth': 'VCU',
-    'UConn': 'Connecticut',
-    'San Diego State': 'San Diego St.',
-    'Morehead State': 'Morehead St.',
-    'Washington State': 'Washington St.',
-    'Iowa State': 'Iowa St.',
-    'South Dakota State': 'South Dakota St.',
-    'UNC': 'North Carolina',
-    'Michigan State': 'Michigan St.',
-    'Long Beach State': 'Long Beach St.',
-    'NC State': 'N.C. State',
-    'Grambling': 'Grambling St.',
-    'Utah State': 'Utah St.',
-    'McNeese State': 'McNeese St.',
-    'Colorado State': 'Colorado St.',
-    'St. Peter\'s': 'Saint Peter\'s',
-    'St. John\'s (NY)': 'St. John\'s',
-    'Saint Mary\'s': 'Saint Mary\'s (CA)',
-    'Mississippi State': 'Mississippi St.',
-    'Norfolk State': 'Norfolk St.',
-    'Colorado State': 'Colorado St.',
-    'Alabama State': 'Alabama St.',
-    'UC-San Diego': 'UC San Diego',
-    'UNC': 'North Carolina',
-    'Iowa State': 'Iowa St.',
-    'Michigan State': 'Michigan St.',
-    'SIU-Edwardsville': 'SIU Edwardsville',
-    'McNeese State': 'McNeese St.',
-    'Utah State': 'Utah St.',
-    
-}
-sr_to_silver = {
-    'St. John\'s (NY)': 'St. John\'s',
-    'Saint Mary\'s': 'Saint Mary\'s (CA)',
-    'Mississippi State': 'Mississippi St.',
-    'Norfolk State': 'Norfolk St.',
-    'Colorado State': 'Colorado St.',
-    'Alabama State': 'Alabama St.',
-    'UC-San Diego': 'UC San Diego',
-    'UNC': 'North Carolina',
-    'Iowa State': 'Iowa St.',
-    'Michigan State': 'Michigan St.',
-    'SIU-Edwardsville': 'SIU Edwardsville',
-    'McNeese State': 'McNeese',
-    'Utah State': 'Utah St.',
-}
 def wp_kenpom(team1, team2, ratings_df, sd=11):
     # Extract ratings for each team in the matchup
     # First, check if team name is in the kenpom teams
@@ -151,11 +31,17 @@ def wp_kenpom(team1, team2, ratings_df, sd=11):
 def wp_silver(team1, team2, ratings_df, sd=11):
 
     if team1.team_name not in ratings_df['Team'].values:
-        team1_silver = sr_to_silver[team1.team_name]
+        if team1.team_name in sr_to_silver:
+            team1_silver = sr_to_silver[team1.team_name]
+        else:
+            team1_silver = PP_TO_SILVER_MAP[team1.team_name]
     else:
         team1_silver = team1.team_name
     if team2.team_name not in ratings_df['Team'].values:
-        team2_silver = sr_to_silver[team2.team_name]
+        if team2.team_name in sr_to_silver:
+            team2_silver = sr_to_silver[team2.team_name]
+        else:
+            team2_silver = PP_TO_SILVER_MAP[team2.team_name]
     else:
         team2_silver = team2.team_name
 
@@ -205,6 +91,10 @@ def simulate_game(team1, team2, ratings_df, method):
     Returns:
         Team: The winning team.
     """
+    # Add to the games played for each team
+    team1.games_played += 1
+    team2.games_played += 1
+    
     if method == 'kenpom':
         return simulate_game_kenpom(team1, team2, ratings_df)
     elif method == 'silver':

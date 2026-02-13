@@ -35,7 +35,7 @@ class Region:
         
         return nodes
 
-    def sim_region(self, ratings_df, player_bk_dict, method):
+    def sim_region(self, ratings_df, player_bk_dict, method, player_bk_used=True):
         '''
         Starting from initial matchups, sims a region of the tournament.
         '''
@@ -51,17 +51,18 @@ class Region:
             
             game1winner = simulate_game(game1.matchup.team1, game1.matchup.team2, ratings_df, method)
             game1.winner = game1winner
-
-            # Handle player bookkeeping for game 1; include seed multiplier
-            handle_player_bookkeeping_for_team(player_bk_dict, game1.matchup.team1)
-            handle_player_bookkeeping_for_team(player_bk_dict, game1.matchup.team2)
             
             game2winner = simulate_game(game2.matchup.team1, game2.matchup.team2, ratings_df, method)
             game2.winner = game2winner
 
-            # Handle player bookkeeping for game 2; include seed multiplier
-            handle_player_bookkeeping_for_team(player_bk_dict, game2.matchup.team1)
-            handle_player_bookkeeping_for_team(player_bk_dict, game2.matchup.team2)
+            if player_bk_used:
+                # Handle player bookkeeping for game 1; include seed multiplier
+                handle_player_bookkeeping_for_team(player_bk_dict, game1.matchup.team1)
+                handle_player_bookkeeping_for_team(player_bk_dict, game1.matchup.team2)
+                
+                # Handle player bookkeeping for game 2; include seed multiplier
+                handle_player_bookkeeping_for_team(player_bk_dict, game2.matchup.team1)
+                handle_player_bookkeeping_for_team(player_bk_dict, game2.matchup.team2)
 
             # TODO: Update team ratings based on simulated game outcomes
 
